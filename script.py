@@ -1,7 +1,7 @@
 import json
 import requests
 import subprocess
-from fastapi import FastAPI, Request, Body
+from fastapi import FastAPI, Request, Body, Response
 from fastapi.testclient import TestClient
 from modules.script_callbacks import on_app_started
 import os 
@@ -41,48 +41,53 @@ API request body:
     "bucket_output_folder": "newton", # (Optional) where you will find your output files 
     "params": {
         "prompt": "a beautiful woman",
-        frames: 24
+        "frames": 24
     }
 }
 """
 async def inference(request: Request):
     global client
     body = await request.body()
-    model_input = json.loads(body)
+    json_body = json.loads(body)
     run_id = uuid.uuid4()
+    model_input = json_body['params']
     
-    print('received request', model_input)
+    print('received request', json_body)
 
-    if not ("bucket_output_folder" in model_input):
+    if not ("bucket_output_folder" in json_body):
         print('bucket_output_folder is not in request... exiting...')
         raise ValueError("bucket_output_folder is required")
 
     if not isinstance(model_input['prompt'], list):
         model_input['prompt'] = [model_input['prompt']]
 
+    res = []
     for i in range(len(model_input['prompt'])):
-        print(f'processing prompt {i}/{len(model_input["prompt"])}: {model_input["prompt"][i]}')
+        print(f'processing prompt {i + 1}/{len(model_input["prompt"])}: {model_input["prompt"][i]}')
         input_value = model_input.copy()
         input_value['prompt'] = model_input['prompt'][i]
     
-        response = client.post('/text2video/inference', json = model_input)
+        response = client.post('/text2video/inference', json = input_value)
 
         print('response', response.json())
     
         output = response.json()
 
         if not ('data' in output and 'video_files' in output['data']):
-            print('unknown ouptut format')
+            print('unknown output format')
             return {}
 
-        local_video_file = output['data']['video_files'][0]
+        local_video_file = output['data']['video_files']
 
         # now we need to write the results to gbucket
-        output_video_path = f'{model_input["output_bucket_path"]}/{run_id}/animation_video_{i}.mp4'
-        print('writing video to gbucket', local_video_file)
+        output_video_path = f'{json_body["bucket_output_folder"]}/{run_id}/animation_video_{i}.mp4'
+        res.append(output_video_path)
+        print('writing video to gbucket', output_video_path)
         write_to_gcp(local_video_file, output_video_path)
 
-    return output
+    response = Response(content=json.dumps({'data': {'video_files': res}}), status_code=200, media_type="application/json")
+    
+    return response
 
 def register_endpoints(block, app):
     global client
