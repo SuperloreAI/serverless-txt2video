@@ -6,7 +6,7 @@ from tqdm import tqdm
 from typing import Union
 from urllib.parse import urlparse
 
-MODEL_URLS = os.environ.get('MODEL_URLS')
+MODEL_URLS = os.environ.get('MODEL_URLS').split(',')
 HF_TOKEN = os.environ.get('HF_TOKEN', '')
 
 CHUNK_SIZE = 1024 * 1024
