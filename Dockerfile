@@ -47,7 +47,7 @@ RUN mkdir -p models/ModelScope/t2v
 ENV MODEL_URLS=${MODEL_URLS}
 ENV HF_TOKEN=${HF_TOKEN}
 
-RUN pip install tqdm requests
+RUN pip install tqdm requests google-cloud-storage
 ADD download_models.py .
 RUN python download_models.py
 

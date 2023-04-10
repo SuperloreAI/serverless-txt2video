@@ -57,17 +57,18 @@ def load_model_by_url(url):
     modules.sd_models.load_model = noop
 
 def init():
-    global model, list_models, load_model
-    import modules.sd_models
+    # global model, list_models, load_model
+    # import modules.sd_models
 
-    modules.sd_models.list_models()
+    # modules.sd_models.list_models()
 
-    list_models = modules.sd_models.list_models
-    modules.sd_models.list_models = noop
+    # list_models = modules.sd_models.list_models
+    # modules.sd_models.list_models = noop
 
-    model = modules.sd_models.load_model()
+    # model = modules.sd_models.load_model()
 
-    load_model = modules.sd_models.load_model
-    modules.sd_models.load_model = noop
+    # load_model = modules.sd_models.load_model
+    # modules.sd_models.load_model = noop
 
-    register_model()
+    # register_model()
+    pass
