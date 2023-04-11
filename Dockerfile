@@ -11,6 +11,7 @@ ARG MODEL_URLS="\
     https://huggingface.co/damo-vilab/modelscope-damo-text-to-video-synthesis/blob/main/configuration.json,\
     https://huggingface.co/damo-vilab/modelscope-damo-text-to-video-synthesis/blob/main/open_clip_pytorch_model.bin"
 
+
 # If you are using a private Huggingface model (sign in required to download) insert your Huggingface
 # access token (https://huggingface.co/settings/tokens) below:
 ARG HF_TOKEN=''
@@ -37,15 +38,16 @@ RUN git clone https://github.com/SuperloreAI/stable-diffusion-webui.git && \
 
 WORKDIR /app/stable-diffusion-webui
 
-# Download the txt2video stuff
-RUN git clone https://github.com/SuperloreAI/sd-webui-text2video.git extensions/sd-webui-text2video && \
-    cd extensions/sd-webui-text2video && \
-    git checkout e38b3e82369f4eaf9bd383ea0a9969a86f981922
+# # Download the txt2video stuff
+# RUN git clone https://github.com/SuperloreAI/sd-webui-text2video.git extensions/sd-webui-text2video && \
+#     cd extensions/sd-webui-text2video && \
+#     git checkout e38b3e82369f4eaf9bd383ea0a9969a86f981922
     
 RUN mkdir -p models/ModelScope/t2v
 
 ENV MODEL_URLS=${MODEL_URLS}
 ENV HF_TOKEN=${HF_TOKEN}
+ENV GCP_SERVICE_ACCOUNT_JSON=${GCP_SERVICE_ACCOUNT_JSON}
 
 RUN pip install tqdm requests google-cloud-storage
 ADD download_models.py .
@@ -56,6 +58,11 @@ RUN python prepare.py --skip-torch-cuda-test --xformers --reinstall-torch --rein
 
 ADD download.py download.py
 RUN python download.py --use-cpu=all
+
+# Download the txt2video stuff
+RUN git clone https://github.com/SuperloreAI/sd-webui-text2video.git extensions/sd-webui-text2video && \
+    cd extensions/sd-webui-text2video && \
+    git checkout e38b3e82369f4eaf9bd383ea0a9969a86f981922
 
 RUN mkdir -p extensions/banana/scripts
 ADD script.py extensions/banana/scripts/banana.py

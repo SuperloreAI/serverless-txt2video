@@ -16,8 +16,14 @@ def get_filename(model_url, id="model", path="models/Stable-diffusion/"):
         return path + id + '.safetensors'
     if '.pth' in model_url:
         return path + id + '.pth'
-    else:
+    if '.ckpt' in model_url:
         return path + id + '.ckpt'
+    
+    filename_with_ext = os.path.basename(urlparse(url).path)
+    # Get the filename without extension
+    _, ext = os.path.splitext(filename_with_ext)
+
+    return path + id + ext
 
 def check_model_file(filename):
     # file_size_mb = round(os.path.getsize(filename) / (1024 * 1024))
@@ -78,4 +84,4 @@ if __name__ == '__main__':
 
         # Get the filename without extension
         filename_without_ext, _ = os.path.splitext(filename_with_ext)
-        download(url, filename_without_ext, path="models/ModelScope/t2v")
+        download(url, filename_without_ext, path="models/ModelScope/t2v/")
