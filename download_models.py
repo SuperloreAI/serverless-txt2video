@@ -8,7 +8,6 @@ from urllib.parse import urlparse
 
 MODEL_URLS = os.environ.get('MODEL_URLS').split(',')
 HF_TOKEN = os.environ.get('HF_TOKEN', '')
-VIDEO_CRAFTER_MODEL = os.environ.get('VIDEO_CRAFTER_MODEL', '')
 
 CHUNK_SIZE = 1024 * 1024
 
@@ -77,14 +76,6 @@ def download(url, id="model", path="models/Stable-diffusion/"):
         download_other_file(url, id, path)
 
 if __name__ == '__main__':
-    # # download("https://huggingface.co/runwayml/stable-diffusion-v1-5/blob/main/v1-5-pruned-emaonly.ckpt", "model", "models/Stable-diffusion/")
-    # vc_filename_with_ext = os.path.basename(urlparse(VIDEO_CRAFTER_MODEL).path)
-
-    # # Get the filename without extension
-    # vc_filename_without_ext, _ = os.path.splitext(vc_filename_with_ext)
-
-    # download(VIDEO_CRAFTER_MODEL, vc_filename_without_ext, path="models/VideoCrafter")
-
     for i, url in enumerate(MODEL_URLS):
         print('Downloading model', i, url)
         # Model name becomes the model ID

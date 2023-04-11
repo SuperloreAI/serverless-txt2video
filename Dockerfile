@@ -11,7 +11,6 @@ ARG MODEL_URLS="\
     https://huggingface.co/damo-vilab/modelscope-damo-text-to-video-synthesis/blob/main/configuration.json,\
     https://huggingface.co/damo-vilab/modelscope-damo-text-to-video-synthesis/blob/main/open_clip_pytorch_model.bin"
 
-ARG VIDEO_CRAFTER_MODEL="https://huggingface.co/kabachuha/videocrafter-pruned-weights/blob/main/model.ckpt"
 
 # If you are using a private Huggingface model (sign in required to download) insert your Huggingface
 # access token (https://huggingface.co/settings/tokens) below:
@@ -45,11 +44,8 @@ WORKDIR /app/stable-diffusion-webui
 #     git checkout e38b3e82369f4eaf9bd383ea0a9969a86f981922
     
 RUN mkdir -p models/ModelScope/t2v
-# ADD configuration/configuration.json models/ModelScope/t2v/
-# RUN mkdir -p models/VideoCrafter
 
 ENV MODEL_URLS=${MODEL_URLS}
-ENV VIDEO_CRAFTER_MODEL=${VIDEO_CRAFTER_MODEL}
 ENV HF_TOKEN=${HF_TOKEN}
 ENV GCP_SERVICE_ACCOUNT_JSON=${GCP_SERVICE_ACCOUNT_JSON}
 
