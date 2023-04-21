@@ -35,6 +35,9 @@ def write_to_gcp(local_filepath, output_filepath, bucket_name=output_bucket):
     # Upload the file to the bucket
     blob.upload_from_filename(local_filepath)
 
+def build_output_bucket_path(bucket_output_folder, user_id, run_id, video_id, video_index):
+    return f"{bucket_output_folder}/{user_id}/{run_id}/{video_id}-animation-{video_index}.mp4"
+
 """
 API request body:
 {
@@ -59,6 +62,14 @@ async def inference(request: Request):
         print('bucket_output_folder is not in request... exiting...')
         raise ValueError("bucket_output_folder is required")
 
+    if not ("user_id" in json_body):
+        print('user_id is not in request... exiting...')
+        raise ValueError("user_id is required")
+
+    if not ("video_id" in model_input):
+        print('video_id is not in request... exiting...')
+        raise ValueError("video_id is required")
+
     if not isinstance(model_input['prompt'], list):
         model_input['prompt'] = [model_input['prompt']]
 
@@ -81,7 +92,7 @@ async def inference(request: Request):
         local_video_file = output['data']['video_files']
 
         # now we need to write the results to gbucket
-        output_video_path = f'{json_body["bucket_output_folder"]}/{run_id}/animation_video_{i}.mp4'
+        output_video_path = build_output_bucket_path(json_body['bucket_output_folder'], json_body['user_id'], run_id, model_input['video_id'], i)
         res.append(output_video_path)
         print('writing video to gbucket', output_video_path)
         write_to_gcp(local_video_file, output_video_path)
