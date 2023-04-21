@@ -39,6 +39,7 @@ def write_to_gcp(local_filepath, output_filepath, bucket_name=output_bucket):
 API request body:
 {
     "bucket_output_folder": "newton", # (Optional) where you will find your output files 
+    "run_id": "1234", # (Optional) a unique identifier for this request
     "params": {
         "prompt": "a beautiful woman",
         "frames": 24
@@ -49,7 +50,7 @@ async def inference(request: Request):
     global client
     body = await request.body()
     json_body = json.loads(body)
-    run_id = uuid.uuid4()
+    run_id = uuid.uuid4() if not ("run_id" in json_body) else json_body['run_id']
     model_input = json_body['params']
     
     print('received request', json_body)
